@@ -144,6 +144,23 @@ app.get('/.well-known/apple-app-site-association', async (req, res) => {
 
 // Android Association
 app.get('/.well-known/assetlinks.json', (req, res) => {
+  let androidShaInjectable;
+  if (androidSHA) {
+    try {
+      const androidShaParser = JSON.parse(androidSHA);
+      if (Array.isArray(androidShaParser)) {
+        androidShaInjectable = androidShaParser;
+      } else {
+        // This should be a string, so make an array from it.
+        androidShaInjectable = [androidShaParser];
+      }
+    } catch (error) {
+      androidShaInjectable = [androidSHA];
+    }
+  } else {
+    androidShaInjectable = [androidSHA];
+  }
+
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.write(
     JSON.stringify([
@@ -152,7 +169,7 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
         target: {
           namespace: 'android_app',
           package_name: androidBundleID,
-          sha256_cert_fingerprints: [androidSHA],
+          sha256_cert_fingerprints: androidShaInjectable,
         },
       },
     ]),
