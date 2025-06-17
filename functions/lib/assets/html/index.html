@@ -76,16 +76,18 @@
         navigator.clipboard.writeText(window.location.href);
         window.location.href = 'https://apps.apple.com/us/app/{{appStoreID}}';
       } else if (result.os.family.includes('Android')) {
+        const parsedURL = URL.parse(window.location.href);
+        const flowLinkId = parsedURL.pathname.substring(1);
+        const fullRedirectUrl = 'https://play.google.com/store/apps/details?id={{androidBundleID}}&referrer=utm_source%3D'+flowLinkId;
+
         if ('{{androidScheme}}' != 'false') {
-          const fallbackUrl = encodeURIComponent(
-            'https://play.google.com/store/apps/details?id={{androidBundleID}}',
-          );
+          const fallbackUrl = encodeURIComponent(fullRedirectUrl);
           window.location.href = `intent:#Intent;scheme={{androidScheme}};package={{androidBundleID}};S.browser_fallback_url=${fallbackUrl};end`;
         } else {
           // We can also use a clipboard in Android instead of Google Play Install Referrer, but it's redundant.
           // navigator.clipboard.writeText(window.location.href);
-          window.location.href =
-            'https://play.google.com/store/apps/details?id={{androidBundleID}}';
+
+          window.location.href = fullRedirectUrl;
         }
       } else {
         if ('{{redirectUrl}}' != '') {
