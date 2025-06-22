@@ -1,101 +1,98 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="white" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="icon" type="image/png" href="" />
-    <link rel="mask-icon" href="" color="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="white" />
 
-    <title>{{title}}</title>
-    <meta name="description" content="{{description}}" />
+  <link rel="icon" type="image/png" href="" />
+  <link rel="mask-icon" href="" color="#ffffff" />
 
-    <meta property="og:title" content="{{title}}" />
-    <meta property="og:description" content="{{description}}" />
-    <meta property="og:image" content="{{thumbnail}}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="en_US" />
+  <title>{{title}}</title>
+  <meta name="description" content="{{description}}" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="{{title}}" />
-    <meta name="twitter:description" content="{{description}}" />
-    <meta name="twitter:image" content="{{thumbnail}}" />
+  <meta property="og:title" content="{{title}}" />
+  <meta property="og:description" content="{{description}}" />
+  <meta property="og:image" content="{{thumbnail}}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
 
-    <link rel="apple-touch-icon" href="" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{title}}" />
+  <meta name="twitter:description" content="{{description}}" />
+  <meta name="twitter:image" content="{{thumbnail}}" />
 
-    <style>
-      body {
-        padding: 0;
-        margin: 0;
-        background-color: black;
-        background-size: cover;
-        background-image: url('{{backgroundImage}}');
-      }
+  <link rel="apple-touch-icon" href="" />
 
-      #fl-powered {
-        position: absolute;
-        position: absolute;
-        bottom: 0px;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 120px;
-      }
-
-      #status {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 200px;
-      }
-    </style>
-  </head>
-
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/Detect.js/2.2.2/detect.min.js"
-    integrity="sha512-iNuMM5cmiXDvk4VCTp6UEbDwYy/dA3CFTTYKB6/V+LD62S58TQZ+sykXzhmVT1QvqHD39ZhecsPGXjZUaIuSWQ=="
-    crossorigin="anonymous"
-    referrerpolicy="no-referrer"
-  ></script>
-
-  <body>
-    <img id="status" src="{{statusImage}}" />
-    <a href="https://extensions.dev/extensions/jauntybrain/firebase-flow-links">
-      <img id="fl-powered" src="{{flPoweredImage}}" />
-    </a>
-  </body>
-
-  <script>
-    if ('{{redirectToStore}}' == 'true') {
-      var result = detect.parse(navigator.userAgent);
-      if (result.os.family === 'iOS') {
-        // Copying to a clipboard for use later as a deferred deep link in iOS.
-        navigator.clipboard.writeText(window.location.href);
-        window.location.href = 'https://apps.apple.com/us/app/{{appStoreID}}';
-      } else if (result.os.family.includes('Android')) {
-        const parsedURL = URL.parse(window.location.href);
-        const flowLinkId = parsedURL.pathname;
-        const fullRedirectUrl = 'https://play.google.com/store/apps/details?id={{androidBundleID}}&referrer=utm_source%3D'+flowLinkId;
-
-        if ('{{androidScheme}}' != 'false') {
-          const fallbackUrl = encodeURIComponent(fullRedirectUrl);
-          window.location.href = `intent:#Intent;scheme={{androidScheme}};package={{androidBundleID}};S.browser_fallback_url=${fallbackUrl};end`;
-        } else {
-          // We can also use a clipboard in Android instead of Google Play Install Referrer, but it's redundant.
-          // navigator.clipboard.writeText(window.location.href);
-
-          window.location.href = fullRedirectUrl;
-        }
-      } else {
-        if ('{{redirectUrl}}' != '') {
-          window.location.href = '{{redirectUrl}}';
-        }
-      }
-    } else if ('{{redirectUrl}}' != '') {
-      window.location.href = '{{redirectUrl}}';
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+      background-color: black;
+      background-size: cover;
+      background-image: url('{{backgroundImage}}');
     }
-  </script>
+
+    #fl-powered {
+      position: absolute;
+      position: absolute;
+      bottom: 0px;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+    }
+
+    #status {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+    }
+  </style>
+</head>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Detect.js/2.2.2/detect.min.js"
+  integrity="sha512-iNuMM5cmiXDvk4VCTp6UEbDwYy/dA3CFTTYKB6/V+LD62S58TQZ+sykXzhmVT1QvqHD39ZhecsPGXjZUaIuSWQ=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<body>
+  <img id="status" src="{{statusImage}}" />
+  <a href="https://extensions.dev/extensions/jauntybrain/firebase-flow-links">
+    <img id="fl-powered" src="{{flPoweredImage}}" />
+  </a>
+</body>
+
+<script>
+  if ('{{redirectToStore}}' == 'true') {
+    var result = detect.parse(navigator.userAgent);
+    if (result.os.family === 'iOS') {
+      // Copying to a clipboard for use later as a deferred deep link in iOS.
+      navigator.clipboard.writeText(window.location.href);
+      window.location.href = 'https://apps.apple.com/us/app/{{appStoreID}}';
+    } else if (result.os.family.includes('Android')) {
+      const fullRedirectUrl = 'https://play.google.com/store/apps/details?id={{androidBundleID}}&referrer=utm_source%3D' + window.location.href;
+
+      if ('{{androidScheme}}' != 'false') {
+        const fallbackUrl = encodeURIComponent(fullRedirectUrl);
+        window.location.href = `intent:#Intent;scheme={{androidScheme}};package={{androidBundleID}};S.browser_fallback_url=${fallbackUrl};end`;
+      } else {
+        // We can also use a clipboard in Android instead of Google Play Install Referrer, but it's redundant.
+        // navigator.clipboard.writeText(window.location.href);
+
+        window.location.href = fullRedirectUrl;
+      }
+    } else {
+      if ('{{redirectUrl}}' != '') {
+        window.location.href = '{{redirectUrl}}';
+      }
+    }
+  } else if ('{{redirectUrl}}' != '') {
+    window.location.href = '{{redirectUrl}}';
+  }
+</script>
+
 </html>
