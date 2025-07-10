@@ -8,6 +8,46 @@ export interface Config {
   androidSHA?: string;
   androidScheme?: string;
   domainPostfix: string;
+  wizeExtensionAdditionalApps?: IWizeExtAdditionalApps;
+}
+export interface IWizeExtAndroidAppConfig {
+  bundleId: string;
+  sha: string[];
+}
+
+export interface IWizeExtIosAppConfig {
+  bundleId: string;
+  teamId: string;
+}
+
+export interface IWizeExtAdditionalAppConfig {
+  android?: IWizeExtAndroidAppConfig;
+  ios?: IWizeExtIosAppConfig;
+}
+
+
+export interface IWizeExtAdditionalApps {
+  [appName: string]: IWizeExtAdditionalAppConfig;
+}
+
+function parseWizeExtensionAdditionalApps(
+  jsonString: string | undefined,
+): IWizeExtAdditionalApps | undefined {
+  if (!jsonString) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(jsonString);
+    // Basic validation to ensure it's an object
+    if (typeof parsed === 'object' && parsed !== null) {
+      return parsed as IWizeExtAdditionalApps;
+    }
+  } catch (e) {
+    console.error('Error parsing WIZE_EXTENSION_ADDITIONAL_APPS:', e);
+  }
+
+  return undefined;
 }
 
 const config: Config = {
@@ -20,6 +60,7 @@ const config: Config = {
   androidSHA: process.env.ANDROID_SHA || '',
   androidScheme: process.env.ANDROID_SCHEME || '',
   domainPostfix: process.env.DOMAIN_POSTFIX || 'flowlinks',
+  wizeExtensionAdditionalApps: parseWizeExtensionAdditionalApps(process.env.WIZE_EXTENSION_ADDITIONAL_APPS || undefined),
 };
 
 export default config;

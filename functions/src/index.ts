@@ -18,6 +18,7 @@ const {
   androidSHA,
   androidScheme,
   domainPostfix,
+  wizeExtensionAdditionalApps,
 } = config;
 
 // Initialize Express app
@@ -122,23 +123,37 @@ app.use(
 app.get('/.well-known/apple-app-site-association', async (req, res) => {
   const applicationID = `${iosTeamID}.${iosBundleID}`;
 
+  const response = {
+    applinks: {
+      apps: [],
+      details: [
+        {
+          appID: applicationID,
+          paths: ['*'],
+        },
+      ],
+    },
+    webcredentials: {
+      apps: [applicationID],
+    },
+  };
+
+  if (wizeExtensionAdditionalApps) {
+    for (const appName in wizeExtensionAdditionalApps) {
+      const additionalApp = wizeExtensionAdditionalApps[appName];
+      if (additionalApp.ios) {
+        const appID = `${additionalApp.ios.teamId}.${additionalApp.ios.bundleId}`;
+        response.applinks.details.push({
+          appID,
+          paths: ['*'],
+        });
+        response.webcredentials.apps.push(appID);
+      }
+    }
+  }
+
   res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.write(
-    JSON.stringify({
-      applinks: {
-        apps: [],
-        details: [
-          {
-            appID: applicationID,
-            paths: ['*'],
-          },
-        ],
-      },
-      webcredentials: {
-        apps: [applicationID],
-      },
-    }),
-  );
+  res.write(JSON.stringify(response));
   res.end();
 });
 
@@ -161,19 +176,35 @@ app.get('/.well-known/assetlinks.json', (req, res) => {
     androidShaInjectable = [androidSHA];
   }
 
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.write(
-    JSON.stringify([
-      {
-        relation: ['delegate_permission/common.handle_all_urls'],
-        target: {
-          namespace: 'android_app',
-          package_name: androidBundleID,
-          sha256_cert_fingerprints: androidShaInjectable,
-        },
+  const response = [
+    {
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: {
+        namespace: 'android_app',
+        package_name: androidBundleID,
+        sha256_cert_fingerprints: androidShaInjectable,
       },
-    ]),
-  );
+    },
+  ];
+
+  if (wizeExtensionAdditionalApps) {
+    for (const appName in wizeExtensionAdditionalApps) {
+      const additionalApp = wizeExtensionAdditionalApps[appName];
+      if (additionalApp.android) {
+        response.push({
+          relation: ['delegate_permission/common.handle_all_urls'],
+          target: {
+            namespace: 'android_app',
+            package_name: additionalApp.android.bundleId,
+            sha256_cert_fingerprints: additionalApp.android.sha,
+          },
+        });
+      }
+    }
+  }
+
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.write(JSON.stringify(response));
   res.end();
 });
 
@@ -252,8 +283,20 @@ async function getFlowLinkResponse(flowLink: FlowLink): Promise<string> {
 
   // Get iOS AppStore appID
   let appStoreID = '';
+  let appIosBundleID = iosBundleID; // Use the default iOS Bundle ID
+
+  const urlObject = new URL(redirectUrl);
+  const wizeExtAdditionalAppParam = urlObject.searchParams.get('wize_ext_additional_apps');
+  if (wizeExtAdditionalAppParam 
+    && wizeExtensionAdditionalApps
+    && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam]
+    && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios
+  ) {
+    appIosBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios!.bundleId;
+  }
+    
   if (redirectToStore) {
-    appStoreID = (await getAppStoreID(iosBundleID)) || '';
+    appStoreID = (await getAppStoreID(appIosBundleID)) || '';
   }
 
   const templatePath = path.join(__dirname, './assets/html/index.html');
