@@ -284,17 +284,19 @@ async function getFlowLinkResponse(flowLink: FlowLink): Promise<string> {
   // Get iOS AppStore appID
   let appStoreID = '';
   let appIosBundleID = iosBundleID; // Use the default iOS Bundle ID
+  let appAndroidBundleID = androidBundleID; // Use the default Android Bundle ID
 
   const urlObject = new URL(redirectUrl);
   const wizeExtAdditionalAppParam = urlObject.searchParams.get('wize_ext_additional_apps');
-  if (wizeExtAdditionalAppParam 
-    && wizeExtensionAdditionalApps
-    && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam]
-    && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios
-  ) {
-    appIosBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios!.bundleId;
+  if (wizeExtAdditionalAppParam && wizeExtensionAdditionalApps && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam]) {
+    if (wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].android) {
+      appAndroidBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].android.bundleId;
+    }
+    if (wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios) {
+      appIosBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios.bundleId;
+    }
   }
-    
+
   if (redirectToStore) {
     appStoreID = (await getAppStoreID(appIosBundleID)) || '';
   }
@@ -305,7 +307,7 @@ async function getFlowLinkResponse(flowLink: FlowLink): Promise<string> {
     .replaceAll('{{title}}', title)
     .replaceAll('{{description}}', description)
     .replaceAll('{{appStoreID}}', appStoreID)
-    .replaceAll('{{androidBundleID}}', androidBundleID)
+    .replaceAll('{{androidBundleID}}', appAndroidBundleID)
     .replaceAll('{{androidScheme}}', (androidScheme ?? false).toString())
     .replaceAll('{{redirectToStore}}', redirectToStore.toString())
     .replaceAll('{{redirectUrl}}', redirectUrl)

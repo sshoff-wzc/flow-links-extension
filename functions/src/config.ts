@@ -58,7 +58,7 @@ const config: Config = {
   iosTeamID: process.env.IOS_TEAM_ID || '',
   androidBundleID: process.env.ANDROID_BUNDLE_ID || '',
   androidSHA: process.env.ANDROID_SHA || '',
-  androidScheme: process.env.ANDROID_SCHEME || '',
+  androidScheme: process.env.ANDROID_SCHEME || undefined,
   domainPostfix: process.env.DOMAIN_POSTFIX || 'flowlinks',
   wizeExtensionAdditionalApps: parseWizeExtensionAdditionalApps(process.env.WIZE_EXTENSION_ADDITIONAL_APPS || undefined),
 };
