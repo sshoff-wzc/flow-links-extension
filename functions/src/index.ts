@@ -290,10 +290,10 @@ async function getFlowLinkResponse(flowLink: FlowLink): Promise<string> {
   const wizeExtAdditionalAppParam = urlObject.searchParams.get('wize_ext_additional_apps');
   if (wizeExtAdditionalAppParam && wizeExtensionAdditionalApps && wizeExtensionAdditionalApps[wizeExtAdditionalAppParam]) {
     if (wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].android) {
-      appAndroidBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].android.bundleId;
+      appAndroidBundleID = <string>wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].android?.bundleId;
     }
     if (wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios) {
-      appIosBundleID = wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios.bundleId;
+      appIosBundleID = <string>wizeExtensionAdditionalApps[wizeExtAdditionalAppParam].ios?.bundleId;
     }
   }
 
